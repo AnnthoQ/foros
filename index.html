@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Constructor de bloques Mac</title>
+<style>
+:root{--bg:#f4f2fb;--pn:#fff;--tx:#25223d;--mu:#6d6a8a;--ln:#e3dff5;--ac:#6c4cf1;--ac2:#efeaff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15131f;--pn:#1f1c2e;--tx:#ece9ff;--mu:#9a96b8;--ln:#34304b;--ac:#9b83ff;--ac2:#2b2646;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15131f;--pn:#1f1c2e;--tx:#ece9ff;--mu:#9a96b8;--ln:#34304b;--ac:#9b83ff;--ac2:#2b2646;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px "Segoe UI",system-ui,sans-serif}
+[hidden]{display:none!important}
+header{position:sticky;top:0;z-index:5;background:var(--pn);border-bottom:1px solid var(--ln);padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fmt{display:flex;flex-wrap:wrap;gap:4px;align-items:center;width:100%;padding-top:6px;border-top:1px dashed var(--ln)}
+button,select{font:inherit;color:var(--tx);background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:5px 9px;cursor:pointer}
+button:hover,select:hover{border-color:var(--ac);background:var(--ac2)}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+.sep{width:1px;height:22px;background:var(--ln);margin:0 4px}
+.clr{display:inline-flex;align-items:center;gap:3px;font-weight:700}
+input[type=color]{width:28px;height:26px;padding:0;border:1px solid var(--ln);border-radius:6px;background:none;cursor:pointer}
+main{display:grid;grid-template-columns:1fr 270px;gap:14px;padding:14px;align-items:start}
+#cv{display:flex;flex-direction:column;gap:18px;min-width:0;padding:18px;border-radius:14px;background:var(--bg)}
+#cv:empty::before{content:"Sin ventanas. Pulsa «+ Ventana».";color:var(--mu)}
+.mac-window.sel,.sub.sel{outline:2px solid var(--ac);outline-offset:3px}
+.mac-body{color:#25223d;outline:none}
+.sub:hover{outline:1px dashed var(--ac);outline-offset:2px}
+aside{background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:12px;position:sticky;top:110px;max-height:calc(100vh - 130px);overflow:auto}
+aside h3{margin:0 0 8px;font-size:14px}
+aside label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:7px 0;color:var(--mu)}
+aside input[type=range]{width:130px}
+.hint{color:var(--mu);font-size:12px}
+dialog{width:min(720px,94vw);background:var(--pn);color:var(--tx);border:1px solid var(--ln);border-radius:14px}
+dialog textarea{width:100%;height:300px;font:12px ui-monospace,Consolas,monospace;background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:8px;padding:8px}
+@media(max-width:820px){main{grid-template-columns:1fr}aside{position:static;max-height:none}}
+</style></head><body>
+<header>
+  <button class="p" id="add">+ Ventana</button><button id="dup">Duplicar</button><button id="up" title="Subir">↑</button><button id="dn" title="Bajar">↓</button><button id="del">Eliminar selección</button>
+  <span class="sep"></span>
+  <label><input type="checkbox" id="live" checked> Animación en vivo</label>
+  <span style="flex:1"></span>
+  <button id="th">Tema</button><button class="p" id="exp">Exportar / Importar</button>
+  <div class="fmt" id="fmt">
+    <button data-c="bold"><b>B</b></button><button data-c="italic"><i>I</i></button><button data-c="underline"><u>U</u></button><button data-c="strikeThrough"><s>S</s></button>
+    <span class="sep"></span>
+    <button data-c="justifyLeft" title="Izquierda">⇤</button><button data-c="justifyCenter" title="Centrar">≡</button><button data-c="justifyRight" title="Derecha">⇥</button><button data-c="justifyFull" title="Justificar">☰</button>
+    <span class="sep"></span>
+    <select id="fs"><option value="">Tamaño</option><option>12</option><option>14</option><option>16</option><option>20</option><option>24</option><option>32</option><option>48</option><option>64</option></select>
+    <select id="ff"><option value="">Fuente</option><option value="Georgia,serif">Georgia</option><option value="'Segoe UI',system-ui,sans-serif">Segoe UI</option><option value="'Courier New',monospace">Monoespaciada</option><option value="Impact,sans-serif">Impact</option></select>
+    <span class="clr" title="Color de texto">A<input type="color" id="fc" value="#6c4cf1"></span>
+    <span class="clr" title="Resaltado">▮<input type="color" id="hc" value="#fff3a3"></span>
+    <span class="sep"></span>
+    <button data-c="insertUnorderedList">• Lista</button><button data-c="insertOrderedList">1. Lista</button><button id="lnk">Enlace</button><button data-c="insertHorizontalRule">―</button>
+    <span class="sep"></span>
+    <button class="p" id="sub">▢ Bloque interno</button><button data-c="removeFormat">Limpiar</button><button data-c="undo">↶</button><button data-c="redo">↷</button>
+  </div>
+</header>
+<main>
+  <div id="cv"></div>
+  <aside id="insp">
+    <h3 id="ttl">Propiedades</h3>
+    <p class="hint" id="none">Haz clic en una ventana o bloque interno para editar su diseño. Dentro de una ventana escribe y usa la barra superior.</p>
+    <div id="props" hidden>
+      <div id="rows"></div>
+      <label>Sombra<select data-p="sh"><option value="none">Ninguna</option><option value="soft">Suave</option><option value="strong">Fuerte</option></select></label>
+      <div class="wo">
+        <label>Mostrar barra<input type="checkbox" id="sb"></label>
+        <h3 style="margin-top:12px">Puntos</h3>
+        <label>Parpadeo en bucle<input type="checkbox" id="an"></label>
+        <label>Duración (ms)<input type="range" id="sp" min="400" max="4000" step="100"></label>
+        <label>Desfase (ms)<input type="range" id="dl" min="0" max="800" step="25"></label>
+      </div>
+    </div>
+  </aside>
+</main>
+<dialog id="dlg">
+  <h3 style="margin-top:0">Código exportado</h3>
+  <p class="hint">Estilos en línea + disparador del parpadeo (sin &lt;style&gt;). Para importar, pega tu código aquí y pulsa «Cargar».</p>
+  <textarea id="code" spellcheck="false"></textarea>
+  <p><label><input type="checkbox" id="rm"> Respetar «reducir movimiento» del sistema</label></p>
+  <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="p" id="cp">Copiar</button><button id="ld">Cargar en el lienzo</button><button id="rs0">Vaciar lienzo</button><span style="flex:1"></span><button id="cl">Cerrar</button></div>
+</dialog>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],cv=$('#cv');
+let sel=null,live=true,rng=null,tm;
+const KF=[{opacity:1,transform:'scale(1)'},{opacity:.25,transform:'scale(.85)'},{opacity:1,transform:'scale(1)'}];
+const WIN=`<div class="mac-window" data-a="1" data-spd="1500" data-dl="250" style="width:100%;min-height:340px;margin:0;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e9e6f7"><div class="mac-bar" style="padding:12px 18px;border-bottom:1px solid #ececf2;font-size:30px;line-height:16px"><span style="display:inline-block;color:#ff5f57">●</span><span style="display:inline-block;color:#febc2e">●</span><span style="display:inline-block;color:#28c840">●</span></div><div class="mac-body" contenteditable="true" style="padding:24px;margin:0"><br></div></div>`;
+const SUB=`<div class="sub" style="background:#f3f0ff;border:1px solid #c9c0f5;border-radius:12px;padding:14px;margin:10px 0;color:#2b2650">Bloque interno</div>`;
+const SH={none:'none',soft:'0 4px 14px rgba(120,100,200,.12)',strong:'0 22px 45px rgba(120,100,200,.3)'};
+const isW=e=>e&&e.classList.contains('mac-window'),body=e=>e.querySelector('.mac-body'),bar=e=>e.querySelector('.mac-bar'),dot=i=>e=>e.querySelectorAll('.mac-bar span')[i];
+const self=e=>e,tb=e=>isW(e)?body(e):e;
+const P={bg:[self,'backgroundColor'],tx:[tb,'color'],bc:[self,'borderColor'],bw:[self,'borderWidth','px'],rad:[self,'borderRadius','px'],pad:[tb,'padding','px'],w:[self,'width','%'],mh:[self,'minHeight','px'],bbg:[bar,'backgroundColor'],bbc:[bar,'borderBottomColor'],d0:[dot(0),'color'],d1:[dot(1),'color'],d2:[dot(2),'color']};
+const R=[['bg','Fondo','color'],['tx','Color de texto','color'],['bc','Borde','color'],['bw','Grosor borde','range',0,10],['rad','Redondeo','range',0,48],['pad','Relleno','range',0,80],['w','Ancho %','range',20,100],['mh','Alto mínimo','range',0,900],['bbg','Fondo barra','color',0,0,1],['bbc','Línea barra','color',0,0,1],['d0','Punto 1','color',0,0,1],['d1','Punto 2','color',0,0,1],['d2','Punto 3','color',0,0,1]];
+$('#rows').innerHTML=R.map(([k,l,t,a,b,w])=>`<label class="${w?'wo':''}">${l}<input data-p="${k}" type="${t}"${t=='range'?` min="${a}" max="${b}"`:''}></label>`).join('');
+const hex=c=>{const m=c.match(/[\d.]+/g);if(!m||m[3]==='0')return'#ffffff';return'#'+m.slice(0,3).map(v=>(+v|0).toString(16).padStart(2,'0')).join('')};
+const curWin=()=>isW(sel)?sel:sel&&sel.closest('.mac-window');
+function save(){clearTimeout(tm);tm=setTimeout(()=>{try{localStorage.setItem('macb',cv.innerHTML)}catch(e){}},300)}
+function anim(){$$('.mac-window').forEach(w=>w.querySelectorAll('.mac-bar span').forEach((s,i)=>{s.getAnimations().forEach(a=>a.cancel());if(live&&w.dataset.a==='1')s.animate(KF,{duration:+w.dataset.spd||1500,delay:i*(+w.dataset.dl||0),iterations:Infinity,easing:'ease-in-out'})}))}
+function select(e){sel&&sel.classList.remove('sel');sel=e;$('#props').hidden=!e;$('#none').hidden=!!e;if(e){e.classList.add('sel');sync()}else $('#ttl').textContent='Propiedades'}
+function sync(){const w=isW(sel);$('#ttl').textContent=w?'Ventana':'Bloque interno';$$('.wo').forEach(x=>x.hidden=!w);
+ $$('[data-p]').forEach(i=>{const k=i.dataset.p;if(k==='sh'){i.value=sel.dataset.sh||'none';return}const[f,pr,u]=P[k],el=f(sel);if(!el)return;
+  if(i.type==='color')i.value=hex(getComputedStyle(el)[pr]);else if(u==='%')i.value=parseFloat(el.style.width)||100;else i.value=parseFloat(getComputedStyle(el)[pr])||0});
+ if(w){$('#an').checked=sel.dataset.a==='1';$('#sp').value=sel.dataset.spd;$('#dl').value=sel.dataset.dl;$('#sb').checked=bar(sel).style.display!=='none'}}
+cv.addEventListener('click',e=>select(e.target.closest('.sub')||e.target.closest('.mac-window')));
+cv.addEventListener('input',save);
+document.addEventListener('input',e=>{const t=e.target,k=t.dataset.p;if(!sel)return;
+ if(k){if(k==='sh'){sel.style.boxShadow=SH[t.value];sel.dataset.sh=t.value}else{const[f,pr,u]=P[k],el=f(sel);el.style[pr]=t.value+(u||'');if(k==='bw')el.style.borderStyle='solid'}save();return}
+ const w=curWin();if(!w||!isW(sel))return;
+ if(t.id==='an')w.dataset.a=t.checked?'1':'0';if(t.id==='sp')w.dataset.spd=t.value;if(t.id==='dl')w.dataset.dl=t.value;if(t.id==='sb')bar(w).style.display=t.checked?'':'none';
+ if(['an','sp','dl','sb'].includes(t.id)){anim();save()}});
+$('#live').onchange=e=>{live=e.target.checked;anim()};
+$('#add').onclick=()=>{cv.insertAdjacentHTML('beforeend',WIN);select(cv.lastElementChild);anim();save()};
+$('#dup').onclick=()=>{const w=curWin();if(!w)return;w.classList.remove('sel');const c=w.cloneNode(true);w.after(c);select(c);anim();save()};
+$('#del').onclick=()=>{if(!sel)return;const s=sel;select(null);s.remove();save()};
+$('#up').onclick=()=>{const w=curWin();if(w&&w.previousElementSibling){w.previousElementSibling.before(w);save()}};
+$('#dn').onclick=()=>{const w=curWin();if(w&&w.nextElementSibling){w.nextElementSibling.after(w);save()}};
+$('#th').onclick=()=>{const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=d?'light':'dark'};
+/* ---------- texto enriquecido ---------- */
+document.addEventListener('selectionchange',()=>{const s=getSelection();if(!s.rangeCount||!s.anchorNode)return;const n=s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement;if(n&&cv.contains(n)&&n.closest('.mac-body'))rng=s.getRangeAt(0).cloneRange()});
+const rs=()=>{if(rng){const s=getSelection();s.removeAllRanges();s.addRange(rng)}};
+const ex=(c,v)=>{rs();document.execCommand('styleWithCSS',false,c!=='fontSize');document.execCommand(c,false,v||null);save()};
+$('#fmt').addEventListener('mousedown',e=>{if(e.target.closest('button'))e.preventDefault()});
+$$('#fmt [data-c]').forEach(b=>b.onclick=()=>ex(b.dataset.c));
+$('#fc').oninput=e=>ex('foreColor',e.target.value);
+$('#hc').oninput=e=>ex('hiliteColor',e.target.value);
+$('#ff').onchange=e=>{if(e.target.value)ex('fontName',e.target.value);e.target.value=''};
+$('#fs').onchange=e=>{const v=e.target.value;if(!v)return;ex('fontSize',7);$$('font[size="7"]').forEach(f=>{const s=document.createElement('span');s.style.fontSize=v+'px';s.innerHTML=f.innerHTML;f.replaceWith(s)});e.target.value='';save()};
+$('#lnk').onclick=()=>{const u=prompt('URL del enlace:','https://');if(u)ex('createLink',u)};
+$('#sub').onclick=()=>{if(rng&&cv.contains(rng.startContainer)){ex('insertHTML',SUB+'<br>')}else{const w=curWin()||cv.querySelector('.mac-window');if(w){body(w).insertAdjacentHTML('beforeend',SUB);save()}}};
+/* ---------- exportar / importar ---------- */
+function build(){const w=document.createElement('div');w.innerHTML=cv.innerHTML;const wins=[...w.children];
+ const cfg=wins.map(x=>x.dataset.a==='1'?[+x.dataset.spd,+x.dataset.dl]:0);
+ wins.forEach((x,i)=>{[x,...x.querySelectorAll('*')].forEach(n=>{n.removeAttribute('contenteditable');n.classList.remove('sel');if(n.classList.contains('sub'))n.classList.remove('sub');['data-a','data-spd','data-dl','data-sh'].forEach(a=>n.removeAttribute(a));if(!n.getAttribute('class'))n.removeAttribute('class')});if(i<wins.length-1)x.style.marginBottom='18px'});
+ const js=($('#rm').checked?"if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;":'')+"var c="+JSON.stringify(cfg)+",k="+JSON.stringify(KF).replace(/"/g,"'")+";this.parentNode.querySelectorAll('.mac-window').forEach(function(w,i){if(!c[i])return;w.querySelectorAll('.mac-bar span').forEach(function(s,j){s.animate(k,{duration:c[i][0],delay:j*c[i][1],iterations:Infinity,easing:'ease-in-out'})})})";
+ return '<div class="mac-wrapper" style=\'margin:0 -5px;padding:0;font-family:"Segoe UI",system-ui,sans-serif\'>\n'+w.innerHTML+'\n<img alt="" width="0" height="0" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="display:block;width:0;height:0;border:0" onload="'+js+'">\n</div>'}
+$('#exp').onclick=()=>{$('#code').value=build();$('#dlg').showModal()};
+$('#rm').onchange=()=>$('#code').value=build();
+$('#cl').onclick=()=>$('#dlg').close();
+$('#cp').onclick=async()=>{const t=$('#code');try{await navigator.clipboard.writeText(t.value)}catch(e){t.select();document.execCommand('copy')}$('#cp').textContent='¡Copiado!';setTimeout(()=>$('#cp').textContent='Copiar',1500)};
+$('#ld').onclick=()=>{const d=new DOMParser().parseFromString($('#code').value,'text/html'),ws=d.querySelectorAll('.mac-window');if(!ws.length){alert('No se encontró ningún .mac-window en el código.');return}
+ select(null);cv.innerHTML='';ws.forEach(x=>{const n=document.importNode(x,true);n.dataset.a='1';n.dataset.spd='1500';n.dataset.dl='250';n.style.marginBottom='';const b=body(n);if(b){b.contentEditable='true';b.querySelectorAll('div').forEach(s=>s.classList.add('sub'))}cv.append(n)});anim();save();$('#dlg').close()};
+$('#rs0').onclick=()=>{if(confirm('¿Vaciar todo el lienzo?')){select(null);cv.innerHTML='';save()}};
+/* ---------- inicio ---------- */
+try{const s=localStorage.getItem('macb');if(s)cv.innerHTML=s}catch(e){}
+$$('.sel').forEach(x=>x.classList.remove('sel'));
+if(!cv.children.length&&!localStorage.getItem('macb'))cv.insertAdjacentHTML('beforeend',WIN);
+anim();
+</script></body></html>
