@@ -4,7 +4,7 @@
 
 <p align="center">Constructor visual de bloques estilo ventana macOS.<br>Edita contenido, colores y bloques anidados, y exporta HTML con <b>estilos en línea</b>.</p>
 
-<p align="center"><a href="https://annthoq.github.io/NOMBRE-DEL-REPO/">Ver demo</a> · <a href="https://github.com/AnnthoQ">Perfil del autor</a></p>
+<p align="center"><a href="https://annthoq.github.io/foros/">Ver demo</a> · <a href="https://github.com/AnnthoQ">Perfil del autor</a></p>
 
 ## Características
 
