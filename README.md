@@ -6,6 +6,20 @@
 
 <p align="center"><a href="https://annthoq.github.io/foros/">Ver demo</a> · <a href="https://github.com/AnnthoQ">Perfil del autor</a></p>
 
+## Demo
+
+<!-- Sustituye por una captura o GIF real: docs/demo.gif -->
+<p align="center"><img src="docs/demo.gif" width="720" alt="Editor de bloques estilo macOS"></p>
+
+## Tech Stack
+
+| Área | Tecnología |
+|---|---|
+| Interfaz | HTML5, CSS3 y JavaScript sin frameworks ni dependencias |
+| Edición | `contenteditable` + panel de propiedades propio |
+| Persistencia | `localStorage` (autoguardado) e import/export `.json` |
+| Hosting | GitHub Pages |
+
 ## Características
 
 - **Ventanas:** añadir, duplicar, eliminar y reordenar.
@@ -22,7 +36,7 @@
 ## Estructura
 
 ```
-mac-block-builder/
+foros/
 ├── index.html        # Estructura de la interfaz
 ├── css/styles.css    # Estilos
 ├── js/app.js         # Lógica del editor
@@ -33,6 +47,11 @@ mac-block-builder/
 
 ## Uso local
 
+```bash
+git clone https://github.com/AnnthoQ/foros.git
+cd foros
+```
+
 Abre `index.html` en tu navegador. No requiere instalación ni dependencias.
 
 ## Publicar en GitHub Pages
@@ -40,7 +59,7 @@ Abre `index.html` en tu navegador. No requiere instalación ni dependencias.
 1. Sube el contenido de la carpeta a tu repositorio.
 2. Ve a **Settings → Pages**.
 3. En **Build and deployment**, elige **Deploy from a branch**, rama `main` y carpeta `/ (root)`.
-4. Guarda y espera un minuto. Tu sitio quedará en `https://annthoq.github.io/NOMBRE-DEL-REPO/`.
+4. Guarda y espera un minuto. Tu sitio quedará en `https://annthoq.github.io/foros/`.
 
 ## Código exportado
 
